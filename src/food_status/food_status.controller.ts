@@ -10,13 +10,15 @@ export class FoodStatusController {
         return this.foodStatusService.findAll();
     }
 
+    //para ver las ordenes por id 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
         return this.foodStatusService.findOne(id);
     }
 
+    //crear ordenes
     @Post()
-    createFoodStatus(@Body() body: { id: number, food: string; status: string }) {
-        return this.foodStatusService.create(body);
+    createFoodStatus(@Body() body: { food: string }) {
+        return this.foodStatusService.create(body.food);
     }
 }
