@@ -1,15 +1,17 @@
-import { Body, Controller, Post} from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { Body, Controller, Post, Res } from "@nestjs/common";
+import { application, Response } from "express";
+import { TicketService } from "./Print_ticket.service";
 
-@Controller('tasks')
-export class TasksController 
-{
-    constructor(private readonly tasksService: TasksService) {}
 
-    @Post()
+@Controller('ticket')
+export class TicketController{
+    constructor(private readonly ticketService: TicketService){}
 
-    createTask(@Body() body: {title: string})
+    @Post('generate')
+    async generateTicket(@Body() body:any, @Res() res:Response)
     {
-        return this.tasksService.create(body.title);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename=ticket.pdf');
+        await this.ticketService.generatePDF(body,res);
     }
 }
