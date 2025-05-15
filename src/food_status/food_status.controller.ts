@@ -13,12 +13,18 @@ export class FoodStatusController {
     //para ver las ordenes por id 
     @Get(':id')
     findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.foodStatusService.findOne(id);
+        return this.foodStatusService.findById(id);
     }
 
     //crear ordenes
     @Post()
-    createFoodStatus(@Body() body: { food: string }) {
+    create(@Body() body: { food: string }) {
         return this.foodStatusService.create(body.food);
+    }
+
+    //actualizar el estado de la orden, de acuerdo a la secuencia de estados
+    @Post(':id')
+    updateOrder(@Param('id', ParseIntPipe) id: number, @Body() body: { status: string }) {
+        return this.foodStatusService.updateOrder(id, body.status);
     }
 }

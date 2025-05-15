@@ -1,60 +1,60 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { FoodOrder, FoodStatus } from './food_order.model';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { FoodStatus } from './food_order.model';
 
 @Injectable()
 export class FoodStatusService {
-    private orders: FoodOrder[] = [
-        {
-            id: 1,
-            food: 'Pizza',
-            status: FoodStatus.PENDIENTE,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        }
-    ];
-    private idCounter = 2;
+  private readonly statusOrder = [FoodStatus.PENDIENTE, FoodStatus.PREPARANDO, FoodStatus.ENTREGADO]
 
-    findAll() {
-        return this.orders;
+  private orders = [
+    {
+      id: 1,
+      food: 'Pizza',
+      status: FoodStatus.PENDIENTE,
     }
+  ];
+  private idCounter = 2;
 
-    findOne(id: number) {
-        const order = this.orders.find(order => order.id === id);
-        if (!order) {
-            throw new NotFoundException(`Orden no encontrada con ID: ${id}`);
-        }
-        this.advanceOrderStatus(order);
-        return order;
+  findAll() {
+    return this.orders;
+  }
+
+  findById(id: number) {
+    const order = this.orders.find(order => order.id === id);
+    if (!order) {
+      throw new NotFoundException(`Orden no encontrada con ID: ${id}`);
     }
+    return order;
+  }
 
-    create(food: string) {
-        // Tlas ordenes deben comenzar con estado pendiente, independientemente del estado que se le asigne al crear la orden
-        const newOrder: FoodOrder = {
-            id: this.idCounter++,
-            food,
-            status: FoodStatus.PENDIENTE,
-            //fechas para corroborar la secuencia de la orden
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+  create(food: string) {
+    // Tlas ordenes deben comenzar con estado pendiente, independientemente del estado que se le asigne al crear la orden
+    const newOrder = {
+      id: this.idCounter++,
+      food,
+      status: this.statusOrder[0], // el estado desde el flujo dde secuencia para estados
+    };
 
-        this.orders.push(newOrder);
-        return newOrder;
-    }
+    this.orders.push(newOrder);
+    return newOrder;
+  }
 
-    private advanceOrderStatus(order: FoodOrder) {
-    // cambio de estado de la orden dependiendo de el 'get' que se haga?
-    switch (order.status) {
-      case FoodStatus.PENDIENTE:
-        order.status = FoodStatus.PREPARANDO;
-        break;
-      case FoodStatus.PREPARANDO:
-        order.status = FoodStatus.ENTREGADO;
-        break;
-      // si ya está en ENTREGADO, se mantiene en ese estado
-    }
+  //para actualizar el estado de una orden en especifico siguiendo el orden de estados
+  updateOrder(id: number, newStatus: string) {
+    const order = this.findById(id);
     
-    // actualiza la fecha de la orden, para corroborar la secuencia
-    order.updatedAt = new Date();
+    if (!this.statusOrder.includes(newStatus as FoodStatus)) {
+      throw new BadRequestException(`Estado inválido: ${newStatus}`);
+    }
+
+    const currentIndex = this.statusOrder.indexOf(order.status);
+    const newIndex = this.statusOrder.indexOf(newStatus as FoodStatus); 
+
+    // valida el estado segun el orden que lleva la orden
+    if (newIndex !== currentIndex + 1) {
+      throw new BadRequestException(`No se puede cambiar el estado de ${order.status}, transición inválida a ${newStatus}`);
+    }
+
+    order.status = newStatus as FoodStatus;
+    return order;
   }
 }

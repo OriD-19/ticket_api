@@ -5,12 +5,3 @@ export enum FoodStatus {
   PREPARANDO = 'preparando',
   ENTREGADO = 'entregado',
 }
-
-// definicion de las ordenes de comida
-export interface FoodOrder {
-  id: number;
-  food: string;
-  status: FoodStatus;
-  createdAt: Date;
-  updatedAt: Date;
-}
