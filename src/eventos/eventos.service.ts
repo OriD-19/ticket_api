@@ -4,7 +4,7 @@ export class EventosService {
   private users = [{ idUser: 1, 
     nombre: 'Fernando', 
     idEvento: 1, 
-    ticket: 11252025, 
+    ticket: '11252025', 
     asistencia: false }];
     
   private eventos = [{ idEvento: 1, nombre: 'Subasta', fecha: '2023-10-01'}];
