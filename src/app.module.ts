@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TicketsModule } from './tickets/tickets.module';
 import { FoodStatusController } from './food_status/food_status.controller';
+import { PrintTicketModule } from './Print_ticket/Print_ticket.module';
 
 @Module({
-  imports: [TicketsModule, FoodStatusController],
+  imports: [TicketsModule, FoodStatusController, PrintTicketModule],
   controllers: [AppController],
   providers: [AppService],
 })
